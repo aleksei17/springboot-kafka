@@ -20,6 +20,7 @@ public class TestContainersTest3 {
         kafka.start();
         System.setProperty("spring.kafka.consumer.bootstrap-servers", kafka.getBootstrapServers());
         System.setProperty("spring.kafka.producer.bootstrap-servers", kafka.getBootstrapServers());
+        System.setProperty("spring.kafka.bootstrap-servers", kafka.getBootstrapServers());
     }
 
     @Autowired

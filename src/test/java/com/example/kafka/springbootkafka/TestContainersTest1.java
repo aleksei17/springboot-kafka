@@ -48,7 +48,8 @@ public class TestContainersTest1 {
         public void initialize(ConfigurableApplicationContext ctx) {
             TestPropertyValues.of(
                     "spring.kafka.consumer.bootstrap-servers=" + kafka.getBootstrapServers(),
-                    "spring.kafka.producer.bootstrap-servers=" + kafka.getBootstrapServers()
+                    "spring.kafka.producer.bootstrap-servers=" + kafka.getBootstrapServers(),
+                    "spring.kafka.bootstrap-servers=" + kafka.getBootstrapServers()
 
             ).applyTo(ctx.getEnvironment());
         }
