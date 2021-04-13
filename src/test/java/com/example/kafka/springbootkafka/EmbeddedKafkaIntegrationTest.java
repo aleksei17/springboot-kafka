@@ -1,12 +1,14 @@
 package com.example.kafka.springbootkafka;
 
+import org.awaitility.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(properties = {
         "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
@@ -26,11 +28,15 @@ public class EmbeddedKafkaIntegrationTest {
     private Consumer consumer;
 
     @Test
-    void name() throws InterruptedException {
+    void name() {
         String message = "test message";
         producer.sendMessage(message);
-        Thread.sleep(1_000);
-        String actual = consumer.getLastMessageConsumed();
-        assertEquals(message, actual);
+
+        await()
+                .atLeast(Duration.ONE_HUNDRED_MILLISECONDS)
+                .atMost(Duration.ONE_SECOND)
+                .with()
+                .pollInterval(Duration.ONE_HUNDRED_MILLISECONDS)
+                .until(consumer::getLastMessageConsumed, equalTo(message));
     }
 }

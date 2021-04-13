@@ -1,5 +1,6 @@
 package com.example.kafka.springbootkafka;
 
+import org.awaitility.Duration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest
 @DirtiesContext
@@ -34,12 +36,16 @@ public class TestContainersTest1 {
     }
 
     @Test
-    void name() throws InterruptedException {
+    void test() {
         String message = "test message";
         producer.sendMessage(message);
-        Thread.sleep(1_000);
-        String actual = consumer.getLastMessageConsumed();
-        assertEquals(message, actual);
+
+        await()
+                .atLeast(Duration.ZERO)
+                .atMost(Duration.ONE_SECOND)
+                .with()
+                .pollInterval(Duration.ONE_HUNDRED_MILLISECONDS)
+                .until(consumer::getLastMessageConsumed, equalTo(message));
     }
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
